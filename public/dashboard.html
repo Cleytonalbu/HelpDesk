@@ -351,9 +351,6 @@ select.fi{cursor:pointer;appearance:none}
     <a data-view="reports" onclick="show('reports',this)">
       <span class="ni">📈</span> Relatórios
     </a>
-    <a data-view="datashow" onclick="show('datashow',this)">
-      <span class="ni">📽</span> Datashow
-    </a>
     <a href="/tv.html" target="_blank" style="margin-top:4px">
       <span class="ni">📺</span> Painel TV
       <span style="font-size:9px;color:var(--accent);margin-left:auto;border:1px solid var(--accent);border-radius:4px;padding:1px 5px">LIVE</span>
@@ -378,9 +375,9 @@ select.fi{cursor:pointer;appearance:none}
 <div class="main">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-      <img src="/img/LOGO-REGIONAL.svg" alt="HR" style="height:30px;filter:brightness(0) invert(1);opacity:0.8">
+      <img src="/img/hospital-regional.svg" alt="HR" style="height:30px;filter:brightness(0) invert(1);opacity:0.8">
       <span style="color:var(--border2);font-size:18px">|</span>
-      <img src="/img/logo-PBSAUDE.svg" alt="PB" style="height:28px;filter:brightness(0) invert(1);opacity:0.8">
+      <img src="/img/pb-saude.svg" alt="PB" style="height:28px;filter:brightness(0) invert(1);opacity:0.8">
     </div>
     <div class="topbar-title" id="page-title">Dashboard</div>
     <div class="search-wrap">
@@ -633,128 +630,6 @@ select.fi{cursor:pointer;appearance:none}
       </div>
     </div>
 
-    <!-- DATASHOW VIEW -->
-    <div class="view" id="v-datashow">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px">📽 Agendamento de Datashow</div>
-          <div style="font-size:13px;color:var(--muted)">Gerencie reservas do projetor. Conflitos de horário são detectados automaticamente.</div>
-        </div>
-        <button class="btn btn-primary" onclick="openDatashowForm(null)">➕ Nova Reserva</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="changeDatashowDate(-7)">‹ Semana anterior</button>
-        <span style="font-size:14px;font-weight:600" id="ds-week-label"></span>
-        <button class="btn btn-ghost btn-sm" onclick="changeDatashowDate(7)">Próxima semana ›</button>
-        <button class="btn btn-ghost btn-sm" onclick="initDatashow()">Hoje</button>
-      </div>
-      <div class="tbl-wrap">
-        <table><thead><tr><th>Data</th><th>Horário</th><th>Duração</th><th>Local</th><th>Finalidade</th><th>Solicitante</th><th>Setor</th><th>Status</th><th>Ações</th></tr></thead>
-        <tbody id="ds-tbody"></tbody></table>
-      </div>
-    </div>
-
-    </div>
-
-  </div>
-</div>
-
-<!-- KB ARTICLE FORM MODAL -->
-<div class="aform-overlay" id="kb-form-overlay" onclick="closeModal('kb-form-overlay',event)">
-  <div class="aform" style="max-width:560px" onclick="event.stopPropagation()">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700">📝 Novo Artigo</div>
-      <div class="close-btn" onclick="closeModal('kb-form-overlay')">✕</div>
-    </div>
-    <div id="kbf-err" style="background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--red);margin-bottom:12px;display:none"></div>
-    <div class="fg"><label class="fl">Categoria</label>
-      <select class="fi" id="kbf-cat"><option value="">— Sem categoria —</option></select>
-    </div>
-    <div class="fg"><label class="fl">Título do Artigo <span style="color:var(--red)">*</span></label>
-      <input class="fi" id="kbf-title" placeholder="Ex: Como redefinir senha no AD"></div>
-    <div class="fg" style="margin-bottom:20px"><label class="fl">Conteúdo <span style="color:var(--red)">*</span></label>
-      <textarea class="fi" id="kbf-body" rows="7" placeholder="Descreva a solução passo a passo…"></textarea></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveKBArticle()">💾 Salvar Artigo</button>
-      <button class="btn btn-ghost" onclick="closeModal('kb-form-overlay')">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- CLIENT EDIT MODAL -->
-<div class="aform-overlay" id="client-edit-overlay" onclick="closeModal('client-edit-overlay',event)">
-  <div class="aform" style="max-width:460px" onclick="event.stopPropagation()">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700">✏ Editar Usuário</div>
-      <div class="close-btn" onclick="closeModal('client-edit-overlay')">✕</div>
-    </div>
-    <div id="ce-ok"  style="background:var(--green-bg);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--green);margin-bottom:12px;display:none"></div>
-    <div id="ce-err" style="background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--red);margin-bottom:12px;display:none"></div>
-    <div class="fg"><label class="fl">Nome completo</label><input class="fi" id="ce-name" placeholder="Nome do usuário"></div>
-    <div class="fg"><label class="fl">E-mail <span style="font-size:10px;color:var(--accent)">(pode corrigir)</span></label>
-      <input class="fi" id="ce-email" type="email" placeholder="email@hospital.com"></div>
-    <div class="fg" style="margin-bottom:20px"><label class="fl">Departamento / Setor</label>
-      <select class="fi" id="ce-dept">
-        <option value="">— Selecionar —</option>
-        <option>Administrativo</option><option>Almoxarifado</option><option>Centro Cirúrgico</option>
-        <option>Comercial</option><option>Enfermagem</option><option>Farmácia</option>
-        <option>Financeiro</option><option>Internação</option><option>Jurídico</option>
-        <option>Laboratório</option><option>Manutenção</option><option>Nutrição</option>
-        <option>Radiologia</option><option>Recepção</option><option>RH</option>
-        <option>TI</option><option>UTI</option><option>Outro</option>
-      </select></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveClientEdit()">Salvar Alterações</button>
-      <button class="btn btn-ghost" onclick="closeModal('client-edit-overlay')">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-<!-- DATASHOW FORM MODAL -->
-<div class="aform-overlay" id="ds-form-overlay" onclick="closeModal('ds-form-overlay',event)">
-  <div class="aform" style="max-width:520px" onclick="event.stopPropagation()">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700" id="dsf-modal-title">Nova Reserva de Datashow</div>
-      <div class="close-btn" onclick="closeModal('ds-form-overlay')">✕</div>
-    </div>
-    <div id="dsf-ok"  style="background:var(--green-bg);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--green);margin-bottom:12px;display:none"></div>
-    <div id="dsf-err" style="background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--red);margin-bottom:12px;display:none"></div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Data <span style="color:var(--red)">*</span></label><input class="fi" type="date" id="dsf-date"></div>
-      <div class="fg"><label class="fl">Horário <span style="color:var(--red)">*</span></label><input class="fi" type="time" id="dsf-time" value="09:00"></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Duração (min)</label>
-        <select class="fi" id="dsf-duration">
-          <option value="30">30 min</option><option value="60" selected>1 hora</option>
-          <option value="90">1h 30min</option><option value="120">2 horas</option>
-          <option value="180">3 horas</option><option value="240">4 horas</option>
-        </select></div>
-      <div class="fg"><label class="fl">Local <span style="color:var(--red)">*</span></label>
-        <input class="fi" id="dsf-location" placeholder="Ex: Sala de Reuniões 1"></div>
-    </div>
-    <div class="fg"><label class="fl">Finalidade / Descrição <span style="color:var(--red)">*</span></label>
-      <input class="fi" id="dsf-purpose" placeholder="Ex: Treinamento de equipe, Reunião com gestores…"></div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Solicitante <span style="color:var(--red)">*</span></label><input class="fi" id="dsf-rname" placeholder="Nome completo"></div>
-      <div class="fg"><label class="fl">Setor</label>
-        <select class="fi" id="dsf-rdept">
-          <option value="">— Selecionar —</option>
-          <option>Administrativo</option><option>Almoxarifado</option><option>Centro Cirúrgico</option>
-          <option>Enfermagem</option><option>Farmácia</option><option>Financeiro</option>
-          <option>Internação</option><option>Laboratório</option><option>Manutenção</option>
-          <option>Nutrição</option><option>Radiologia</option><option>Recepção</option>
-          <option>RH</option><option>TI</option><option>UTI</option><option>Outro</option>
-        </select></div>
-    </div>
-    <div class="fg"><label class="fl">E-mail do solicitante</label><input class="fi" type="email" id="dsf-remail" placeholder="email@hospital.com"></div>
-    <div class="fg" style="margin-bottom:20px"><label class="fl">Observações</label><textarea class="fi" id="dsf-notes" rows="2" placeholder="Informações adicionais…"></textarea></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveDatashow()">📽 Confirmar Reserva</button>
-      <button class="btn btn-ghost" onclick="closeModal('ds-form-overlay')">Cancelar</button>
-    </div>
-  </div>
-</div>
 
 <!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notif-panel">
@@ -1882,113 +1757,11 @@ async function saveClientEdit() {
   } else { errEl.textContent=r.error||'Erro ao atualizar.'; errEl.style.display='block'; }
 }
 
-// ── DATASHOW ─────────────────────────────────────────────────────────────────
-let datashowOffset = 0;
-let datashowReservations = [];
-let editingDatashowId = null;
-
-function initDatashow() { datashowOffset = 0; loadDatashow(); }
-
-function changeDatashowDate(days) { datashowOffset += days; loadDatashow(); }
-
-async function loadDatashow() {
-  const base = new Date();
-  base.setDate(base.getDate() + datashowOffset);
-  const from = new Date(base); from.setDate(from.getDate() - from.getDay());
-  const to   = new Date(from); to.setDate(to.getDate() + 6);
-  const fromStr = from.toISOString().slice(0,10);
-  const toStr   = to.toISOString().slice(0,10);
-  document.getElementById('ds-week-label').textContent =
-    `${fmtDateShort(fromStr)} – ${fmtDateShort(toStr)}`;
-  datashowReservations = await api('GET',`/datashow?date_from=${fromStr}&date_to=${toStr}`);
-  renderDatashow(datashowReservations);
-}
-
-function renderDatashow(items) {
-  const statusColors = {confirmed:'resolved',cancelled:'escalated',pending:'progress'};
-  const statusLabel2 = {confirmed:'Confirmado',cancelled:'Cancelado',pending:'Pendente'};
-  document.getElementById('ds-tbody').innerHTML = (items||[]).length
-    ? (items||[]).map(r=>`<tr>
-        <td style="font-size:12.5px">${fmtDateShort(r.date)}</td>
-        <td><strong>${r.time}</strong></td>
-        <td style="color:var(--muted);font-size:12px">${r.duration||60} min</td>
-        <td style="font-size:12.5px">${r.location}</td>
-        <td style="font-size:12.5px;max-width:180px">${r.purpose}</td>
-        <td style="font-size:12px">${r.requester_name}</td>
-        <td style="font-size:12px;color:var(--muted)">${r.requester_dept||'—'}</td>
-        <td><span class="badge ${statusColors[r.status]||'open'}">${statusLabel2[r.status]||r.status}</span></td>
-        <td><div style="display:flex;gap:5px">
-          <button class="btn btn-ghost btn-sm" onclick="openDatashowForm('${r._id}')">✏</button>
-          <button class="btn btn-danger btn-sm" onclick="cancelDatashow('${r._id}')">✕</button>
-        </div></td>
-      </tr>`).join('')
-    : '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px">Nenhum agendamento nesta semana</td></tr>';
-}
-
-function openDatashowForm(id) {
-  editingDatashowId = id;
-  const r = id ? datashowReservations.find(x=>x._id===id) : null;
-  document.getElementById('ds-form-overlay').classList.add('open');
-  document.getElementById('dsf-date').value     = r?.date || new Date().toISOString().slice(0,10);
-  document.getElementById('dsf-time').value     = r?.time || '09:00';
-  document.getElementById('dsf-duration').value = r?.duration || '60';
-  document.getElementById('dsf-location').value = r?.location || '';
-  document.getElementById('dsf-purpose').value  = r?.purpose || '';
-  document.getElementById('dsf-rname').value    = r?.requester_name || (AGENT?.name||'');
-  document.getElementById('dsf-remail').value   = r?.requester_email || (AGENT?.email||'');
-  document.getElementById('dsf-rdept').value    = r?.requester_dept || '';
-  document.getElementById('dsf-notes').value    = r?.notes || '';
-  document.getElementById('dsf-err').style.display='none';
-  document.getElementById('dsf-ok').style.display='none';
-  document.getElementById('dsf-modal-title').textContent = id ? 'Editar Reserva' : 'Nova Reserva de Datashow';
-}
-
-async function saveDatashow() {
-  const date    = document.getElementById('dsf-date').value;
-  const time    = document.getElementById('dsf-time').value;
-  const dur     = document.getElementById('dsf-duration').value;
-  const loc     = document.getElementById('dsf-location').value.trim();
-  const purpose = document.getElementById('dsf-purpose').value.trim();
-  const rname   = document.getElementById('dsf-rname').value.trim();
-  const remail  = document.getElementById('dsf-remail').value.trim();
-  const rdept   = document.getElementById('dsf-rdept').value.trim();
-  const notes   = document.getElementById('dsf-notes').value.trim();
-  const errEl   = document.getElementById('dsf-err');
-  const okEl    = document.getElementById('dsf-ok');
-  errEl.style.display='none'; okEl.style.display='none';
-  if (!date||!time||!loc||!purpose||!rname) { errEl.textContent='Preencha os campos obrigatórios.'; errEl.style.display='block'; return; }
-
-  const body = { date, time, duration:parseInt(dur)||60, location:loc, purpose, requester_name:rname, requester_email:remail, requester_dept:rdept, notes };
-
-  let r;
-  if (editingDatashowId) {
-    r = await api('PATCH',`/datashow/${editingDatashowId}`, body);
-  } else {
-    r = await api('POST','/datashow', body);
-  }
-
-  if (r.error) {
-    errEl.innerHTML = `⚠ ${r.error}`; errEl.style.display='block';
-  } else {
-    okEl.textContent = editingDatashowId ? 'Reserva atualizada!' : 'Reserva confirmada!';
-    okEl.style.display='block';
-    await loadDatashow();
-    setTimeout(()=>closeModal('ds-form-overlay'),1400);
-  }
-}
-
-async function cancelDatashow(id) {
-  if (!confirm('Cancelar este agendamento?')) return;
-  await api('DELETE',`/datashow/${id}`);
-  loadDatashow();
-}
-
-// Override show to load report/datashow data
+// Override show to load reports data when tab opens
 const _origShow = show;
 show = (view, el) => {
   _origShow(view, el);
   if (view === 'reports') loadReportData();
-  if (view === 'datashow') initDatashow();
 };
 </script>
 </body>

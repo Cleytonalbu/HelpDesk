@@ -233,7 +233,7 @@ updateClock();
 // Fetch and render
 async function fetchData() {
   try {
-    const r = await fetch(`${API}/reports/tv`);
+    const r = await fetch(`${API}/reports/tv`);  // API = '/api', full path = /api/reports/tv
     const d = await r.json();
     render(d);
   } catch(e) { console.error('TV fetch error', e); }

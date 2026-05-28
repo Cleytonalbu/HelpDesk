@@ -24,7 +24,11 @@ db.agents.count({}, (err, n) => {
 
   // Agents
   const agentList = [
-    { name:'Admin HelpDesk', email:'admin@helpdesk.com',   pw:'admin123',   role:'admin', color:'#3b82f6' }
+    { name:'Admin HelpDesk', email:'admin@helpdesk.com',   pw:'admin123',   role:'admin', color:'#3b82f6' },
+    { name:'Carlos Lima',    email:'carlos@helpdesk.com',  pw:'carlos123',  role:'N1',    color:'#3b82f6' },
+    { name:'Ana Torres',     email:'ana@helpdesk.com',     pw:'ana123',     role:'N2',    color:'#10b981' },
+    { name:'Mariana Costa',  email:'mariana@helpdesk.com', pw:'mariana123', role:'N3',    color:'#8b5cf6' },
+    { name:'Lucas Freitas',  email:'lucas@helpdesk.com',   pw:'lucas123',   role:'N1',    color:'#f59e0b' },
   ];
   db.agents.insert(agentList.map(a => ({
     _id:uuid(), name:a.name, email:a.email, password:bcrypt.hashSync(a.pw,10),
@@ -32,7 +36,15 @@ db.agents.count({}, (err, n) => {
   })), (err, agentDocs) => {
     const byEmail = {};
     agentDocs.forEach(a => byEmail[a.email] = a);
-    
+    const carlos = byEmail['carlos@helpdesk.com'];
+    const ana    = byEmail['ana@helpdesk.com'];
+    const mariana= byEmail['mariana@helpdesk.com'];
+
+    // Demo client
+    db.clients.insert([{
+      _id:uuid(), name:'João Mendes', email:'joao@empresa.com',
+      password:bcrypt.hashSync('joao123',10), department:'TI', active:true, created_at:now()
+    }]);
 
     // Assets
     db.assets.insert([

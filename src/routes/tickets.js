@@ -117,7 +117,8 @@ router.get('/:id', auth, (req, res) => {
 
 // POST /api/tickets
 router.post('/', auth, (req, res) => {
-  const { title, description, priority, category, channel, requester_name, requester_email, asset_id } = req.body;
+  const { title, description, priority, category, channel,
+          requester_name, requester_email, requester_dept, asset_id } = req.body;
   if (!title || !description || !requester_name || !requester_email)
     return res.status(400).json({ error: 'Campos obrigatorios: title, description, requester_name, requester_email' });
   const prio = priority || 'medium';
@@ -129,6 +130,7 @@ router.post('/', auth, (req, res) => {
       status: 'open', priority: prio, category: category || 'outros',
       channel: channel || 'portal', tier,
       requester_name, requester_email,
+      requester_dept: requester_dept || '',
       agent_id: null, asset_id: asset_id || null,
       sla_response_deadline: slaDeadline(prio, created, 0),
       sla_resolve_deadline:  slaDeadline(prio, created, 1),
@@ -147,7 +149,7 @@ router.post('/', auth, (req, res) => {
 
 // PATCH /api/tickets/:id
 router.patch('/:id', auth, (req, res) => {
-  const allowed = ['status','priority','tier','agent_id','asset_id','title','description','category'];
+  const allowed = ['status','priority','tier','agent_id','asset_id','title','description','category','requester_dept'];
   const update = { updated_at: now() };
   allowed.forEach(k => { if (req.body[k] !== undefined) update[k] = req.body[k]; });
   if (update.status === 'resolved' && !update.resolved_at) update.resolved_at = now();

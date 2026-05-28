@@ -201,6 +201,22 @@ select.fi{cursor:pointer;appearance:none}
 .empty-icon{font-size:40px;margin-bottom:12px}
 .empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
 .empty-desc{font-size:13.5px;line-height:1.6}
+
+/* DATASHOW */
+.ds-status-confirmed{background:var(--green-bg);color:var(--green)}
+.ds-status-cancelled{background:var(--red-bg);color:var(--red)}
+.ds-status-pending{background:var(--orange-bg);color:var(--orange)}
+.ds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px}
+.ds-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow);transition:border .15s}
+.ds-card:hover{border-color:var(--accent)}
+.ds-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.ds-card-date{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-1px;color:var(--accent)}
+.ds-card-day{font-size:11px;color:var(--muted);margin-top:2px}
+.ds-card-time{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.ds-card-loc{font-size:12px;color:var(--muted);margin-bottom:6px}
+.ds-card-purpose{font-size:13.5px;font-weight:500;margin-bottom:6px}
+.ds-card-requester{font-size:12px;color:var(--muted)}
+.ds-empty{text-align:center;padding:48px 24px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -220,6 +236,7 @@ select.fi{cursor:pointer;appearance:none}
     <a class="active" data-view="home" onclick="show('home',this)">🏠 Início</a>
     <a data-view="my-tickets" onclick="show('my-tickets',this)">🎫 Meus Chamados</a>
     <a data-view="new-ticket" onclick="show('new-ticket',this)">➕ Novo Chamado</a>
+    <a data-view="datashow" onclick="show('datashow',this)">📽 Datashow</a>
     <a data-view="kb" onclick="show('kb',this)">📚 Ajuda</a>
     <a data-view="profile" onclick="show('profile',this)">👤 Meu Perfil</a>
   </nav>
@@ -265,6 +282,11 @@ select.fi{cursor:pointer;appearance:none}
         <div class="quick-link" onclick="show('new-ticket',document.querySelector('[data-view=new-ticket]'))">
           <div class="ql-icon" style="background:var(--accent-bg)">🎫</div>
           <div><div class="ql-title">Abrir Chamado</div><div class="ql-desc">Reporte um problema ou solicitação</div></div>
+          <span style="color:var(--muted);margin-left:auto">›</span>
+        </div>
+        <div class="quick-link" onclick="show('datashow',document.querySelector('[data-view=datashow]'))">
+          <div class="ql-icon" style="background:var(--purple-bg)">📽</div>
+          <div><div class="ql-title">Agendar Datashow</div><div class="ql-desc">Reserve o projetor / auditório</div></div>
           <span style="color:var(--muted);margin-left:auto">›</span>
         </div>
         <div class="quick-link" onclick="show('kb',document.querySelector('[data-view=kb]'))">
@@ -321,6 +343,52 @@ select.fi{cursor:pointer;appearance:none}
         <div class="form-row2">
           <div class="fg"><label class="fl">Seu Nome</label><input class="fi" id="nt-name" placeholder="Nome completo"></div>
           <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="nt-email" placeholder="seu@empresa.com"></div>
+        </div>
+        <div class="form-row2">
+          <div class="fg"><label class="fl">Seu Setor / Departamento</label>
+            <select class="fi" id="nt-dept">
+              <option value="">— Selecione seu setor —</option>
+              <option>Administrativo</option>
+              <option>Almoxarifado</option>
+              <option>Centro Cirúrgico</option>
+              <option>Enfermagem</option>
+              <option>Farmácia</option>
+              <option>Financeiro</option>
+              <option>Internação</option>
+              <option>Jurídico</option>
+              <option>Laboratório</option>
+              <option>Manutenção</option>
+              <option>Nutrição</option>
+              <option>Radiologia</option>
+              <option>Recepção</option>
+              <option>RH</option>
+              <option>TI</option>
+              <option>UTI</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Setor Afetado / Destino</label>
+            <select class="fi" id="nt-dest-dept">
+              <option value="">— Igual ao meu setor —</option>
+              <option>Administrativo</option>
+              <option>Almoxarifado</option>
+              <option>Centro Cirúrgico</option>
+              <option>Enfermagem</option>
+              <option>Farmácia</option>
+              <option>Financeiro</option>
+              <option>Internação</option>
+              <option>Jurídico</option>
+              <option>Laboratório</option>
+              <option>Manutenção</option>
+              <option>Nutrição</option>
+              <option>Radiologia</option>
+              <option>Recepção</option>
+              <option>RH</option>
+              <option>TI</option>
+              <option>UTI</option>
+              <option>Outro</option>
+            </select>
+          </div>
         </div>
         <div class="fg"><label class="fl">Assunto</label><input class="fi" id="nt-title" placeholder="Descreva o problema brevemente"></div>
         <div class="form-row2">
@@ -424,6 +492,95 @@ select.fi{cursor:pointer;appearance:none}
 
 </div>
 
+
+  <!-- DATASHOW VIEW -->
+  <div class="view" id="v-datashow">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px">📽 Agendamento de Datashow</div>
+        <div style="font-size:13px;color:var(--muted)">Reserve o projetor com antecedência. Conflitos de horário são verificados automaticamente.</div>
+      </div>
+      <button class="btn btn-primary" onclick="openDsForm(null)">📅 Nova Reserva</button>
+    </div>
+
+    <!-- Week nav -->
+    <div style="display:flex;align-items:center;gap:10px;margin:16px 0;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="changeDsWeek(-7)">‹ Semana anterior</button>
+      <span style="font-size:13.5px;font-weight:600;font-family:'Syne',sans-serif" id="ds-week-label">—</span>
+      <button class="btn btn-ghost btn-sm" onclick="changeDsWeek(7)">Próxima semana ›</button>
+      <button class="btn btn-ghost btn-sm" onclick="initDs()">Hoje</button>
+      <span style="font-size:12px;color:var(--muted);margin-left:auto" id="ds-count-label"></span>
+    </div>
+
+    <!-- Reservations list -->
+    <div id="ds-list"></div>
+
+    <!-- My reservations -->
+    <div style="margin-top:24px">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">Minhas Reservas</div>
+      <div id="ds-my-list"></div>
+    </div>
+  </div>
+
+
+<!-- DATASHOW FORM MODAL -->
+<div class="modal-overlay" id="ds-form-modal" onclick="if(event.target===this)closeModal2('ds-form-modal')">
+  <div class="modal" style="width:560px;max-height:88vh" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px" id="dsf-title">Nova Reserva de Datashow</div>
+        <div style="font-size:12.5px;color:var(--muted)">Preencha os dados da solicitação. Conflitos serão avisados automaticamente.</div>
+      </div>
+      <div class="close-btn" onclick="closeModal2('ds-form-modal')">✕</div>
+    </div>
+    <div style="padding:20px 24px;overflow-y:auto;max-height:60vh">
+      <div id="dsf-err" style="background:var(--red-bg);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none"></div>
+      <div id="dsf-ok"  style="background:var(--green-bg);border:1px solid rgba(5,150,105,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);margin-bottom:14px;display:none"></div>
+      <div class="form-row2">
+        <div class="fg"><label class="fl">Data <span style="color:var(--red)">*</span></label>
+          <input class="fi" type="date" id="dsf-date"></div>
+        <div class="fg"><label class="fl">Horário <span style="color:var(--red)">*</span></label>
+          <input class="fi" type="time" id="dsf-time" value="08:00" step="1800"></div>
+      </div>
+      <div class="form-row2">
+        <div class="fg"><label class="fl">Duração</label>
+          <select class="fi" id="dsf-duration">
+            <option value="30">30 minutos</option>
+            <option value="60" selected>1 hora</option>
+            <option value="90">1h 30min</option>
+            <option value="120">2 horas</option>
+            <option value="180">3 horas</option>
+            <option value="240">4 horas</option>
+          </select></div>
+        <div class="fg"><label class="fl">Local / Sala <span style="color:var(--red)">*</span></label>
+          <input class="fi" id="dsf-location" placeholder="Ex: Auditório Principal, Sala 2…"></div>
+      </div>
+      <div class="fg"><label class="fl">Finalidade / Objetivo <span style="color:var(--red)">*</span></label>
+        <input class="fi" id="dsf-purpose" placeholder="Ex: Treinamento de equipe, Reunião com diretores…"></div>
+      <div class="form-row2">
+        <div class="fg"><label class="fl">Seu nome <span style="color:var(--red)">*</span></label>
+          <input class="fi" id="dsf-rname" placeholder="Nome completo"></div>
+        <div class="fg"><label class="fl">Seu setor</label>
+          <select class="fi" id="dsf-rdept">
+            <option value="">— Selecione —</option>
+            <option>Administrativo</option><option>Almoxarifado</option><option>Centro Cirúrgico</option>
+            <option>Enfermagem</option><option>Farmácia</option><option>Financeiro</option>
+            <option>Internação</option><option>Jurídico</option><option>Laboratório</option>
+            <option>Manutenção</option><option>Nutrição</option><option>Radiologia</option>
+            <option>Recepção</option><option>RH</option><option>TI</option>
+            <option>UTI</option><option>Outro</option>
+          </select></div>
+      </div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">Observações</label>
+        <textarea class="fi" id="dsf-notes" rows="2" placeholder="Equipamentos extras, número de participantes, etc…"></textarea></div>
+    </div>
+    <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveDs()">📽 Confirmar Reserva</button>
+      <button class="btn btn-ghost" onclick="closeModal2('ds-form-modal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TICKET DETAIL MODAL -->
 <div class="modal-overlay" id="ticket-modal" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
@@ -500,8 +657,20 @@ async function init() {
   if (CLIENT.department) document.getElementById('pf-dept').value = CLIENT.department;
 
   // Pre-fill new ticket form
-  document.getElementById('nt-name').value = CLIENT.name;
+  document.getElementById('nt-name').value  = CLIENT.name;
   document.getElementById('nt-email').value = CLIENT.email;
+  // Auto-fill setor from client profile
+  if (CLIENT.department) {
+    const deptEl = document.getElementById('nt-dept');
+    if (deptEl) {
+      // Match option by text
+      for (let opt of deptEl.options) {
+        if (opt.value === CLIENT.department || opt.text === CLIENT.department) {
+          deptEl.value = opt.value; break;
+        }
+      }
+    }
+  }
 
   try {
     const [tickets, kbCats, kbArts] = await Promise.all([
@@ -606,20 +775,28 @@ function rate(n) {
 }
 
 async function submitTicket() {
-  const title = document.getElementById('nt-title').value.trim();
-  const desc  = document.getElementById('nt-desc').value.trim();
-  const name  = document.getElementById('nt-name').value.trim();
-  const email = document.getElementById('nt-email').value.trim();
-  if (!title||!desc||!name||!email) return alert('Preencha todos os campos obrigatórios.');
+  const title    = document.getElementById('nt-title').value.trim();
+  const desc     = document.getElementById('nt-desc').value.trim();
+  const name     = document.getElementById('nt-name').value.trim();
+  const email    = document.getElementById('nt-email').value.trim();
+  const dept     = document.getElementById('nt-dept').value;
+  const destDept = document.getElementById('nt-dest-dept').value;
+  if (!title||!desc||!name||!email)
+    return alert('Preencha todos os campos obrigatórios.');
+  if (!dept)
+    return alert('Informe o seu setor / departamento antes de enviar.');
   const r = await api('POST','/tickets',{
     title, description:desc, requester_name:name, requester_email:email,
+    requester_dept: destDept || dept,   // setor afetado ou o próprio setor
     priority: document.getElementById('nt-prio').value,
     category: document.getElementById('nt-cat').value,
     channel: 'portal',
   });
   if (r._id) {
     alert('Chamado #'+r.number+' criado! Em breve um agente entrará em contato.');
-    document.getElementById('nt-title').value=''; document.getElementById('nt-desc').value='';
+    document.getElementById('nt-title').value='';
+    document.getElementById('nt-desc').value='';
+    document.getElementById('nt-dest-dept').value='';
     myTickets.unshift(r);
     renderRecentTickets(); renderMyTickets();
     document.getElementById('ck-total').textContent = myTickets.length;
@@ -686,12 +863,200 @@ function show(view, el) {
   document.querySelectorAll('.topbar-nav a').forEach(a=>a.classList.remove('active'));
   const v = document.getElementById('v-'+view); if(v) v.classList.add('active');
   if(el) el.classList.add('active');
+  if(view === 'datashow') initDs();
 }
 
 function closeModal(e) { if (!e||e.target===document.getElementById('ticket-modal')) document.getElementById('ticket-modal').classList.remove('open'); }
 function logout() { localStorage.removeItem('hd_client_token'); localStorage.removeItem('hd_client'); window.location.href='/'; }
 
 init();
+
+// ── DATASHOW ─────────────────────────────────────────────────────────────────
+let dsOffset = 0;
+let dsAllReservations = [];
+let dsEditId = null;
+const dsDayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const dsMonthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+function initDs() { dsOffset = 0; loadDs(); }
+function changeDsWeek(d) { dsOffset += d; loadDs(); }
+
+async function loadDs() {
+  const base = new Date(); base.setDate(base.getDate() + dsOffset);
+  // Show full week (Mon-Sun)
+  const dow = base.getDay(); // 0=Sun
+  const mon = new Date(base); mon.setDate(base.getDate() - (dow === 0 ? 6 : dow - 1));
+  const sun = new Date(mon);  sun.setDate(mon.getDate() + 6);
+  const fmt = d => d.toISOString().slice(0,10);
+  const fromStr = fmt(mon), toStr = fmt(sun);
+
+  document.getElementById('ds-week-label').textContent =
+    `${mon.getDate()} ${dsMonthNames[mon.getMonth()]} – ${sun.getDate()} ${dsMonthNames[sun.getMonth()]} ${sun.getFullYear()}`;
+
+  dsAllReservations = await api('GET', `/datashow?date_from=${fromStr}&date_to=${toStr}`);
+  renderDs();
+
+  // My reservations (all, not limited to week)
+  const myAll = await api('GET', '/datashow');
+  renderMyDs(myAll || []);
+}
+
+function renderDs() {
+  const items = dsAllReservations || [];
+  const label = document.getElementById('ds-count-label');
+  if (label) label.textContent = items.length ? `${items.length} reserva${items.length>1?'s':''} nesta semana` : 'Nenhuma reserva nesta semana';
+
+  if (!items.length) {
+    document.getElementById('ds-list').innerHTML =
+      '<div class="ds-empty"><div style="font-size:36px;margin-bottom:10px">📅</div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Semana livre</div><div style="font-size:13px">Nenhum agendamento nesta semana. Clique em "Nova Reserva" para agendar.</div></div>';
+    return;
+  }
+
+  // Group by date
+  const byDate = {};
+  items.forEach(r => { if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r); });
+
+  document.getElementById('ds-list').innerHTML = Object.entries(byDate)
+    .sort(([a],[b]) => a.localeCompare(b))
+    .map(([date, reservations]) => {
+      const d = new Date(date + 'T12:00');
+      const dayLabel = dsDayNames[d.getDay()] + ', ' + d.getDate() + ' de ' + dsMonthNames[d.getMonth()];
+      return `<div style="margin-bottom:16px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);font-weight:600;margin-bottom:8px;padding-left:2px">${dayLabel}</div>
+        <div class="ds-grid">
+          ${reservations.map(r => {
+            const isOwn = r.requester_email === CLIENT.email || r.requester_name === CLIENT.name;
+            const statusCls = r.status === 'confirmed' ? 'ds-status-confirmed' : r.status === 'cancelled' ? 'ds-status-cancelled' : 'ds-status-pending';
+            const statusLbl = {confirmed:'Confirmado', cancelled:'Cancelado', pending:'Pendente'}[r.status] || r.status;
+            const endH = Math.floor((parseInt(r.time.split(':')[0])*60 + parseInt(r.time.split(':')[1]) + (parseInt(r.duration)||60)) / 60);
+            const endM = ((parseInt(r.time.split(':')[0])*60 + parseInt(r.time.split(':')[1]) + (parseInt(r.duration)||60)) % 60).toString().padStart(2,'0');
+            return `<div class="ds-card" style="${isOwn?'border-color:var(--accent);background:var(--accent-bg)':''}">
+              <div class="ds-card-hdr">
+                <div>
+                  <div class="ds-card-time">🕐 ${r.time} – ${endH}:${endM}</div>
+                  <div class="ds-card-loc">📍 ${r.location}</div>
+                </div>
+                <span class="badge ${statusCls}" style="font-size:10px">${statusLbl}</span>
+              </div>
+              <div class="ds-card-purpose">${r.purpose}</div>
+              <div class="ds-card-requester">👤 ${r.requester_name}${r.requester_dept?' · '+r.requester_dept:''}</div>
+              ${isOwn && r.status !== 'cancelled' ? `<div style="display:flex;gap:6px;margin-top:10px">
+                <button class="btn btn-ghost btn-sm" onclick="openDsForm('${r._id}')">✏ Editar</button>
+                <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="cancelDs('${r._id}')">✕ Cancelar</button>
+              </div>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function renderMyDs(all) {
+  const my = (all||[]).filter(r =>
+    r.requester_email === CLIENT.email || r.requester_name === CLIENT.name
+  ).sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+  if (!my.length) {
+    document.getElementById('ds-my-list').innerHTML =
+      '<div style="font-size:13px;color:var(--muted);padding:12px 0">Você ainda não tem reservas.</div>';
+    return;
+  }
+
+  document.getElementById('ds-my-list').innerHTML = '<div class="ds-grid">' +
+    my.slice(0, 6).map(r => {
+      const d = new Date(r.date + 'T12:00');
+      const statusCls = r.status === 'confirmed' ? 'ds-status-confirmed' : r.status === 'cancelled' ? 'ds-status-cancelled' : 'ds-status-pending';
+      const statusLbl = {confirmed:'Confirmado', cancelled:'Cancelado', pending:'Pendente'}[r.status] || r.status;
+      return `<div class="ds-card">
+        <div class="ds-card-hdr">
+          <div>
+            <div class="ds-card-date">${d.getDate()}</div>
+            <div class="ds-card-day">${dsDayNames[d.getDay()]} ${dsMonthNames[d.getMonth()]} ${d.getFullYear()}</div>
+          </div>
+          <span class="badge ${statusCls}" style="font-size:10px">${statusLbl}</span>
+        </div>
+        <div class="ds-card-time">🕐 ${r.time} · ${r.duration||60}min</div>
+        <div class="ds-card-loc">📍 ${r.location}</div>
+        <div class="ds-card-purpose">${r.purpose}</div>
+        ${r.status !== 'cancelled' ? `<div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn btn-ghost btn-sm" onclick="openDsForm('${r._id}')">✏ Editar</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="cancelDs('${r._id}')">✕ Cancelar</button>
+        </div>` : ''}
+      </div>`;
+    }).join('') + '</div>';
+}
+
+function openDsForm(id) {
+  dsEditId = id;
+  const r = id ? (dsAllReservations||[]).find(x=>x._id===id) : null;
+  document.getElementById('dsf-title').textContent = id ? 'Editar Reserva' : 'Nova Reserva de Datashow';
+  document.getElementById('dsf-err').style.display = 'none';
+  document.getElementById('dsf-ok').style.display  = 'none';
+  document.getElementById('dsf-date').value     = r?.date || new Date().toISOString().slice(0,10);
+  document.getElementById('dsf-time').value     = r?.time || '08:00';
+  document.getElementById('dsf-duration').value = r?.duration?.toString() || '60';
+  document.getElementById('dsf-location').value = r?.location || '';
+  document.getElementById('dsf-purpose').value  = r?.purpose  || '';
+  document.getElementById('dsf-rname').value    = r?.requester_name  || CLIENT.name || '';
+  document.getElementById('dsf-notes').value    = r?.notes || '';
+  // Auto-fill dept
+  const rdept = document.getElementById('dsf-rdept');
+  const dept = r?.requester_dept || CLIENT.department || '';
+  for (let opt of rdept.options) { if (opt.value === dept || opt.text === dept) { rdept.value = opt.value; break; } }
+  document.getElementById('ds-form-modal').classList.add('open');
+}
+
+async function saveDs() {
+  const date    = document.getElementById('dsf-date').value;
+  const time    = document.getElementById('dsf-time').value;
+  const dur     = document.getElementById('dsf-duration').value;
+  const loc     = document.getElementById('dsf-location').value.trim();
+  const purpose = document.getElementById('dsf-purpose').value.trim();
+  const rname   = document.getElementById('dsf-rname').value.trim();
+  const rdept   = document.getElementById('dsf-rdept').value;
+  const notes   = document.getElementById('dsf-notes').value.trim();
+  const errEl   = document.getElementById('dsf-err');
+  const okEl    = document.getElementById('dsf-ok');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+
+  if (!date||!time||!loc||!purpose||!rname) {
+    errEl.textContent = '⚠ Preencha os campos obrigatórios: data, horário, local, finalidade e nome.';
+    errEl.style.display = 'block'; return;
+  }
+
+  const body = {
+    date, time, duration: parseInt(dur)||60, location: loc, purpose,
+    requester_name: rname, requester_email: CLIENT.email || '',
+    requester_dept: rdept, notes
+  };
+
+  const r = dsEditId
+    ? await api('PATCH', `/datashow/${dsEditId}`, body)
+    : await api('POST', '/datashow', body);
+
+  if (r.error) {
+    // 409 conflict — make the message clear
+    errEl.innerHTML = `⚠ <strong>Horário indisponível.</strong><br>${r.error}`;
+    errEl.style.display = 'block';
+  } else {
+    okEl.textContent = dsEditId ? '✓ Reserva atualizada com sucesso!' : '✓ Reserva confirmada! Até lá 📽';
+    okEl.style.display = 'block';
+    setTimeout(() => {
+      closeModal2('ds-form-modal');
+      loadDs();
+    }, 1600);
+  }
+}
+
+async function cancelDs(id) {
+  if (!confirm('Cancelar esta reserva?')) return;
+  await api('DELETE', `/datashow/${id}`);
+  loadDs();
+}
+
+function closeModal2(id) {
+  document.getElementById(id).classList.remove('open');
+}
 </script>
 </body>
 </html>
