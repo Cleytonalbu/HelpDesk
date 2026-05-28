@@ -351,6 +351,9 @@ select.fi{cursor:pointer;appearance:none}
     <a data-view="reports" onclick="show('reports',this)">
       <span class="ni">📈</span> Relatórios
     </a>
+    <a data-view="datashow" onclick="show('datashow',this)">
+      <span class="ni">📽</span> Datashow
+    </a>
     <a href="/tv.html" target="_blank" style="margin-top:4px">
       <span class="ni">📺</span> Painel TV
       <span style="font-size:9px;color:var(--accent);margin-left:auto;border:1px solid var(--accent);border-radius:4px;padding:1px 5px">LIVE</span>
@@ -631,6 +634,55 @@ select.fi{cursor:pointer;appearance:none}
     </div>
 
 
+    <!-- DATASHOW VIEW -->
+    <div class="view" id="v-datashow">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px">📽 Agendamentos de Datashow</div>
+          <div style="font-size:13px;color:var(--muted)">Visualize e gerencie todas as solicitações de reserva do projetor.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <select class="fsel" id="ds-filter-status" onchange="renderDsAgent()">
+            <option value="">Todos os status</option>
+            <option value="confirmed">Confirmados</option>
+            <option value="pending">Pendentes</option>
+            <option value="cancelled">Cancelados</option>
+          </select>
+          <button class="btn btn-primary" onclick="openDsAgentForm(null)">➕ Nova Reserva</button>
+        </div>
+      </div>
+
+      <!-- Week navigation -->
+      <div style="display:flex;align-items:center;gap:10px;margin:16px 0;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="changeDsAgentWeek(-7)">‹ Semana anterior</button>
+        <span style="font-size:14px;font-weight:600;font-family:'Syne',sans-serif" id="dsa-week-label">—</span>
+        <button class="btn btn-ghost btn-sm" onclick="changeDsAgentWeek(7)">Próxima semana ›</button>
+        <button class="btn btn-ghost btn-sm" onclick="initDsAgent()">Hoje</button>
+        <span class="spacer"></span>
+        <span style="font-size:12px;color:var(--muted)" id="dsa-count"></span>
+      </div>
+
+      <!-- Table view -->
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Horário</th>
+              <th>Duração</th>
+              <th>Local</th>
+              <th>Finalidade</th>
+              <th>Solicitante</th>
+              <th>Setor</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="dsa-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
 <!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notif-panel">
   <div class="notif-hdr"><span>Notificações</span><span style="font-size:11px;color:var(--accent);cursor:pointer">Marcar lidas</span></div>
@@ -786,6 +838,65 @@ select.fi{cursor:pointer;appearance:none}
     <div style="display:flex;gap:10px">
       <button class="btn btn-primary" style="flex:1" onclick="saveClientPassword()">Redefinir Senha</button>
       <button class="btn btn-ghost" onclick="closeModal('client-pass-overlay')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATASHOW AGENT FORM MODAL -->
+<div class="aform-overlay" id="dsa-form-overlay" onclick="closeModal('dsa-form-overlay',event)">
+  <div class="aform" style="max-width:540px" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700" id="dsaf-title">Nova Reserva de Datashow</div>
+      <div class="close-btn" onclick="closeModal('dsa-form-overlay')">✕</div>
+    </div>
+    <div id="dsaf-ok"  style="background:var(--green-bg);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--green);margin-bottom:12px;display:none"></div>
+    <div id="dsaf-err" style="background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:9px 13px;font-size:13px;color:var(--red);margin-bottom:12px;display:none"></div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Data <span style="color:var(--red)">*</span></label>
+        <input class="fi" type="date" id="dsaf-date"></div>
+      <div class="fg"><label class="fl">Horário <span style="color:var(--red)">*</span></label>
+        <input class="fi" type="time" id="dsaf-time" value="08:00" step="1800"></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Duração</label>
+        <select class="fi" id="dsaf-duration">
+          <option value="30">30 minutos</option>
+          <option value="60" selected>1 hora</option>
+          <option value="90">1h 30min</option>
+          <option value="120">2 horas</option>
+          <option value="180">3 horas</option>
+          <option value="240">4 horas</option>
+        </select></div>
+      <div class="fg"><label class="fl">Local <span style="color:var(--red)">*</span></label>
+        <input class="fi" id="dsaf-location" placeholder="Ex: Auditório, Sala 2…"></div>
+    </div>
+    <div class="fg"><label class="fl">Finalidade <span style="color:var(--red)">*</span></label>
+      <input class="fi" id="dsaf-purpose" placeholder="Ex: Treinamento, Reunião de diretores…"></div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Solicitante <span style="color:var(--red)">*</span></label>
+        <input class="fi" id="dsaf-rname" placeholder="Nome completo"></div>
+      <div class="fg"><label class="fl">Setor</label>
+        <select class="fi" id="dsaf-rdept">
+          <option value="">— Selecione —</option>
+          <option>Administrativo</option><option>Almoxarifado</option><option>Centro Cirúrgico</option>
+          <option>Enfermagem</option><option>Farmácia</option><option>Financeiro</option>
+          <option>Internação</option><option>Jurídico</option><option>Laboratório</option>
+          <option>Manutenção</option><option>Nutrição</option><option>Radiologia</option>
+          <option>Recepção</option><option>RH</option><option>TI</option>
+          <option>UTI</option><option>Outro</option>
+        </select></div>
+    </div>
+    <div class="fg" style="margin-bottom:8px"><label class="fl">Status</label>
+      <select class="fi" id="dsaf-status">
+        <option value="confirmed">✅ Confirmado</option>
+        <option value="pending">⏳ Pendente (aguardando aprovação)</option>
+        <option value="cancelled">❌ Cancelado</option>
+      </select></div>
+    <div class="fg" style="margin-bottom:20px"><label class="fl">Observações</label>
+      <textarea class="fi" id="dsaf-notes" rows="2" placeholder="Equipamentos extras, observações…"></textarea></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveDsAgent()">📽 Salvar Reserva</button>
+      <button class="btn btn-ghost" onclick="closeModal('dsa-form-overlay')">Cancelar</button>
     </div>
   </div>
 </div>
@@ -1538,7 +1649,7 @@ function show(view, el) {
   const v = document.getElementById('v-'+view);
   if (v) v.classList.add('active');
   if (el) el.classList.add('active');
-  const titles = {dashboard:'Dashboard',tickets:'Chamados',['new-ticket']:'Novo Chamado',kb:'Base de Conhecimento',chat:'IA Assistente',sla:'Gestão de SLAs',assets:'Ativos (CMDB)',agents:'Agentes',reports:'Relatórios'};
+  const titles = {dashboard:'Dashboard',tickets:'Chamados',['new-ticket']:'Novo Chamado',kb:'Base de Conhecimento',chat:'IA Assistente',sla:'Gestão de SLAs',assets:'Ativos (CMDB)',agents:'Agentes',reports:'Relatórios',datashow:'Agendamentos de Datashow'};
   document.getElementById('page-title').textContent = titles[view]||view;
 }
 function closeModal(id, e) { if (!e||e.target===document.getElementById(id)) document.getElementById(id).classList.remove('open'); }
@@ -1761,8 +1872,142 @@ async function saveClientEdit() {
 const _origShow = show;
 show = (view, el) => {
   _origShow(view, el);
-  if (view === 'reports') loadReportData();
+  if (view === 'reports')  loadReportData();
+  if (view === 'datashow') initDsAgent();
 };
+
+// ── DATASHOW (AGENT VIEW) ─────────────────────────────────────────────────────
+let dsAgentOffset = 0;
+let dsAgentReservations = [];
+let dsAgentEditId = null;
+const dsMonths = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const dsDays   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function initDsAgent() { dsAgentOffset = 0; loadDsAgent(); }
+
+function changeDsAgentWeek(d) { dsAgentOffset += d; loadDsAgent(); }
+
+async function loadDsAgent() {
+  const base = new Date();
+  base.setDate(base.getDate() + dsAgentOffset);
+  const dow = base.getDay();
+  const mon = new Date(base); mon.setDate(base.getDate() - (dow === 0 ? 6 : dow - 1));
+  const sun = new Date(mon);  sun.setDate(mon.getDate() + 6);
+  const fmt  = d => d.toISOString().slice(0, 10);
+  const from = fmt(mon), to = fmt(sun);
+
+  document.getElementById('dsa-week-label').textContent =
+    `${mon.getDate()} ${dsMonths[mon.getMonth()]} – ${sun.getDate()} ${dsMonths[sun.getMonth()]} ${sun.getFullYear()}`;
+
+  dsAgentReservations = await api('GET', `/datashow?date_from=${from}&date_to=${to}`);
+  renderDsAgent();
+}
+
+function renderDsAgent() {
+  const statusFilter = document.getElementById('ds-filter-status')?.value || '';
+  let items = dsAgentReservations || [];
+  if (statusFilter) items = items.filter(r => r.status === statusFilter);
+
+  const cnt = document.getElementById('dsa-count');
+  if (cnt) cnt.textContent = `${items.length} reserva${items.length !== 1 ? 's' : ''} nesta semana`;
+
+  const statusBadge = {
+    confirmed: '<span class="badge resolved">✅ Confirmado</span>',
+    cancelled:  '<span class="badge escalated">❌ Cancelado</span>',
+    pending:    '<span class="badge progress">⏳ Pendente</span>',
+  };
+
+  document.getElementById('dsa-tbody').innerHTML = items.length
+    ? items.map(r => {
+        const d = new Date(r.date + 'T12:00');
+        const dayFmt = `${dsDays[d.getDay()]}, ${r.date.split('-').reverse().join('/')}`;
+        const endMin = parseInt(r.time.split(':')[0])*60 + parseInt(r.time.split(':')[1]) + (parseInt(r.duration)||60);
+        const endTime = `${Math.floor(endMin/60).toString().padStart(2,'0')}:${(endMin%60).toString().padStart(2,'0')}`;
+        return `<tr>
+          <td style="font-size:12.5px;font-weight:500">${dayFmt}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px">${r.time}<span style="color:var(--muted)"> → ${endTime}</span></td>
+          <td style="font-size:12px;color:var(--muted)">${r.duration||60} min</td>
+          <td style="font-size:12.5px">${r.location}</td>
+          <td style="font-size:12.5px;max-width:180px">${r.purpose}</td>
+          <td style="font-size:12.5px">${r.requester_name}</td>
+          <td><span style="font-size:11.5px;background:var(--bg3);border:1px solid var(--border);padding:2px 8px;border-radius:5px">${r.requester_dept||'—'}</span></td>
+          <td>${statusBadge[r.status] || `<span class="badge open">${r.status}</span>`}</td>
+          <td>
+            <div style="display:flex;gap:5px">
+              <button class="btn btn-ghost btn-sm" onclick="openDsAgentForm('${r._id}')">✏</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteDsAgent('${r._id}')">✕</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px">
+        Nenhum agendamento nesta semana
+        ${statusFilter ? '— tente remover o filtro de status' : ''}
+       </td></tr>`;
+}
+
+function openDsAgentForm(id) {
+  dsAgentEditId = id;
+  const r = id ? (dsAgentReservations||[]).find(x => x._id === id) : null;
+  document.getElementById('dsaf-title').textContent = id ? 'Editar Reserva' : 'Nova Reserva de Datashow';
+  document.getElementById('dsaf-ok').style.display  = 'none';
+  document.getElementById('dsaf-err').style.display = 'none';
+  document.getElementById('dsaf-date').value     = r?.date || new Date().toISOString().slice(0, 10);
+  document.getElementById('dsaf-time').value     = r?.time || '08:00';
+  document.getElementById('dsaf-duration').value = r?.duration?.toString() || '60';
+  document.getElementById('dsaf-location').value = r?.location || '';
+  document.getElementById('dsaf-purpose').value  = r?.purpose  || '';
+  document.getElementById('dsaf-rname').value    = r?.requester_name || '';
+  document.getElementById('dsaf-notes').value    = r?.notes || '';
+  document.getElementById('dsaf-status').value   = r?.status || 'confirmed';
+  const rdept = document.getElementById('dsaf-rdept');
+  const dept  = r?.requester_dept || '';
+  for (let opt of rdept.options) { if (opt.value === dept || opt.text === dept) { rdept.value = opt.value; break; } }
+  document.getElementById('dsa-form-overlay').classList.add('open');
+}
+
+async function saveDsAgent() {
+  const date    = document.getElementById('dsaf-date').value;
+  const time    = document.getElementById('dsaf-time').value;
+  const dur     = document.getElementById('dsaf-duration').value;
+  const loc     = document.getElementById('dsaf-location').value.trim();
+  const purpose = document.getElementById('dsaf-purpose').value.trim();
+  const rname   = document.getElementById('dsaf-rname').value.trim();
+  const rdept   = document.getElementById('dsaf-rdept').value;
+  const status  = document.getElementById('dsaf-status').value;
+  const notes   = document.getElementById('dsaf-notes').value.trim();
+  const okEl    = document.getElementById('dsaf-ok');
+  const errEl   = document.getElementById('dsaf-err');
+  okEl.style.display = 'none'; errEl.style.display = 'none';
+
+  if (!date || !time || !loc || !purpose || !rname) {
+    errEl.textContent = 'Preencha os campos obrigatórios: data, horário, local, finalidade e solicitante.';
+    errEl.style.display = 'block'; return;
+  }
+
+  const body = { date, time, duration: parseInt(dur)||60, location: loc, purpose,
+    requester_name: rname, requester_dept: rdept, notes, status };
+
+  const r = dsAgentEditId
+    ? await api('PATCH', `/datashow/${dsAgentEditId}`, body)
+    : await api('POST',  '/datashow', body);
+
+  if (r.error) {
+    errEl.innerHTML = `⚠ ${r.error}`;
+    errEl.style.display = 'block';
+  } else {
+    okEl.textContent = dsAgentEditId ? '✓ Reserva atualizada!' : '✓ Reserva criada!';
+    okEl.style.display = 'block';
+    await loadDsAgent();
+    setTimeout(() => closeModal('dsa-form-overlay'), 1200);
+  }
+}
+
+async function deleteDsAgent(id) {
+  if (!confirm('Remover este agendamento?')) return;
+  await api('DELETE', `/datashow/${id}`);
+  loadDsAgent();
+}
 </script>
 </body>
 </html>

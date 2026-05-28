@@ -344,8 +344,7 @@ select.fi{cursor:pointer;appearance:none}
           <div class="fg"><label class="fl">Seu Nome</label><input class="fi" id="nt-name" placeholder="Nome completo"></div>
           <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="nt-email" placeholder="seu@empresa.com"></div>
         </div>
-        <div class="form-row2">
-          <div class="fg"><label class="fl">Seu Setor / Departamento</label>
+        <div class="fg"><label class="fl">Seu Setor / Departamento <span style="color:var(--red)">*</span></label>
             <select class="fi" id="nt-dept">
               <option value="">— Selecione seu setor —</option>
               <option>Administrativo</option>
@@ -367,29 +366,6 @@ select.fi{cursor:pointer;appearance:none}
               <option>Outro</option>
             </select>
           </div>
-          <div class="fg"><label class="fl">Setor Afetado / Destino</label>
-            <select class="fi" id="nt-dest-dept">
-              <option value="">— Igual ao meu setor —</option>
-              <option>Administrativo</option>
-              <option>Almoxarifado</option>
-              <option>Centro Cirúrgico</option>
-              <option>Enfermagem</option>
-              <option>Farmácia</option>
-              <option>Financeiro</option>
-              <option>Internação</option>
-              <option>Jurídico</option>
-              <option>Laboratório</option>
-              <option>Manutenção</option>
-              <option>Nutrição</option>
-              <option>Radiologia</option>
-              <option>Recepção</option>
-              <option>RH</option>
-              <option>TI</option>
-              <option>UTI</option>
-              <option>Outro</option>
-            </select>
-          </div>
-        </div>
         <div class="fg"><label class="fl">Assunto</label><input class="fi" id="nt-title" placeholder="Descreva o problema brevemente"></div>
         <div class="form-row2">
           <div class="fg"><label class="fl">Categoria</label>
@@ -779,15 +755,14 @@ async function submitTicket() {
   const desc     = document.getElementById('nt-desc').value.trim();
   const name     = document.getElementById('nt-name').value.trim();
   const email    = document.getElementById('nt-email').value.trim();
-  const dept     = document.getElementById('nt-dept').value;
-  const destDept = document.getElementById('nt-dest-dept').value;
+  const dept = document.getElementById('nt-dept').value;
   if (!title||!desc||!name||!email)
     return alert('Preencha todos os campos obrigatórios.');
   if (!dept)
     return alert('Informe o seu setor / departamento antes de enviar.');
   const r = await api('POST','/tickets',{
     title, description:desc, requester_name:name, requester_email:email,
-    requester_dept: destDept || dept,   // setor afetado ou o próprio setor
+    requester_dept: dept,
     priority: document.getElementById('nt-prio').value,
     category: document.getElementById('nt-cat').value,
     channel: 'portal',
@@ -796,7 +771,6 @@ async function submitTicket() {
     alert('Chamado #'+r.number+' criado! Em breve um agente entrará em contato.');
     document.getElementById('nt-title').value='';
     document.getElementById('nt-desc').value='';
-    document.getElementById('nt-dest-dept').value='';
     myTickets.unshift(r);
     renderRecentTickets(); renderMyTickets();
     document.getElementById('ck-total').textContent = myTickets.length;
